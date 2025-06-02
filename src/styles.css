@@ -1,0 +1,60 @@
+@charset "UTF-8";
+
+/* Background and layout */
+body {
+  background-color: SeaShell;
+}
+
+.centered-form {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Typography */
+.underline {
+  text-decoration: underline;
+}
+.no-underline {
+  text-decoration: none;
+}
+
+/* Button styles */
+.glow-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 12px;
+  color: #fff;
+  background-color: #008f51;
+  border: 2px solid #00f900;
+  border-radius: 8px;
+  text-shadow: 0 0 5px #8cc63e;
+  box-shadow: 0 0 8px #8cc63e, 0 0 16px #4b7b4d, 0 0 24px #104547;
+  transition: all 0.3s ease-in-out;
+}
+
+.glow-btn:hover {
+  box-shadow: 0 0 12px #8cc63e, 0 0 24px #4b7b4d, 0 0 32px #104547;
+  transform: scale(1.05);
+}
+
+.delete {
+  background-color: #ff2600;
+}
+
+/* Table enhancements */
+.outer-table {
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  margin-top: 20px;
+}
+
+.spacing {
+  margin: 10px;
+}
