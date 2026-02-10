@@ -27,17 +27,30 @@ export default function PaymentPie({
         { name: "HOA", value: hoa },
     ];
 
+    // Filter out zero values for cleaner display
+    const filteredData = data.filter(d => d.value > 0);
+
     return (
-        <div className="w-80 h-80">
-            <ResponsiveContainer>
+        <div className="w-full max-w-xs sm:max-w-sm h-64 sm:h-80">
+            <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                    <Pie data={data} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80}>
-                        {data.map((_, i) => (
-                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    <Pie
+                        data={filteredData}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius="40%"
+                        outerRadius="65%"
+                        aria-label="Payment breakdown pie chart"
+                    >
+                        {filteredData.map((entry) => (
+                            <Cell
+                                key={`cell-${entry.name}`}
+                                fill={COLORS[data.findIndex(d => d.name === entry.name) % COLORS.length]}
+                            />
                         ))}
                     </Pie>
                     <Tooltip formatter={(value) => `$${(value as number).toFixed(2)}`} />
-                    <Legend />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
                 </PieChart>
             </ResponsiveContainer>
         </div>

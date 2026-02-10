@@ -1,12 +1,19 @@
 // src/components/EscrowToggle.tsx
 import type { Dispatch, SetStateAction } from "react";
 
+export interface EscrowInclusions {
+    tax: boolean;
+    insurance: boolean;
+    pmi: boolean;
+    hoa: boolean;
+}
+
 export default function EscrowToggle({
                                          include,
                                          setInclude,
                                      }: {
-    include: Record<string, boolean>;
-    setInclude: Dispatch<SetStateAction<Record<string, boolean>>>;
+    include: EscrowInclusions;
+    setInclude: Dispatch<SetStateAction<EscrowInclusions>>;
 }) {
     return (
         <div>
@@ -21,7 +28,7 @@ export default function EscrowToggle({
                             type="checkbox"
                             id={`checkbox-${key}`}
                             checked={val}
-                            onChange={() => setInclude({ ...include, [key]: !val })}
+                            onChange={() => setInclude((prev) => ({ ...prev, [key]: !val }))}
                             className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                         <label

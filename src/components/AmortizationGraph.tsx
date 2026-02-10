@@ -2,6 +2,15 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { AmortizationPayment } from "../lib/mortgageUtils";
 
+interface YearlyData {
+    year: number;
+    balance: number;
+    principalPaid: number;
+    interestPaid: number;
+    totalInterestPaid: number;
+    totalPrincipalPaid: number;
+}
+
 export default function AmortizationGraph({ schedule }: { schedule: AmortizationPayment[] }) {
     // Group data by year for better visualization
     const yearlyData = schedule.reduce((acc, payment) => {
@@ -22,7 +31,7 @@ export default function AmortizationGraph({ schedule }: { schedule: Amortization
             acc[year].interestPaid += payment.interestDue;
         }
         return acc;
-    }, {} as Record<number, any>);
+    }, {} as Record<number, YearlyData>);
 
     // Calculate cumulative totals
     let totalInterest = 0;

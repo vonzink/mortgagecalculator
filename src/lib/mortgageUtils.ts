@@ -42,6 +42,20 @@ export interface AmortizationPayment {
     year: number;
     taxReturned: number;
     cumulativeTaxReturned: number;
+    pmiActive: boolean;
+    ltv: number;
+}
+
+// PMI is typically removed when LTV reaches 78% (automatic) or 80% (by request)
+export const PMI_REMOVAL_LTV = 0.78;
+
+export function calculateLTV(remainingBalance: number, homeValue: number): number {
+    if (homeValue <= 0) return 0;
+    return remainingBalance / homeValue;
+}
+
+export function shouldPMIBeActive(ltv: number): boolean {
+    return ltv > PMI_REMOVAL_LTV;
 }
 
 export function generateAmortizationSchedule(
@@ -53,16 +67,23 @@ export function generateAmortizationSchedule(
     paymentInterval: number = 1,
     extraAnnualPayment: number = 0,
     startPaymentNumber: number = 1,
-    yearlyTaxReturn: number = 0
+    yearlyTaxReturn: number = 0,
+    homeValue: number = 0 // For LTV/PMI calculations
 ): AmortizationPayment[] {
+    // If homeValue not provided, estimate from loan amount (assuming 20% down)
+    const effectiveHomeValue = homeValue > 0 ? homeValue : loanAmount / 0.8;
     const schedule: AmortizationPayment[] = [];
     const monthlyRate = annualRate / 100 / 12;
     const totalPayments = termYears * 12;
-    const monthlyPayment = loanAmount * monthlyRate / (1 - (1 + monthlyRate) ** -totalPayments);
+
+    // Handle zero interest rate edge case
+    const monthlyPayment = monthlyRate === 0
+        ? loanAmount / totalPayments
+        : loanAmount * monthlyRate / (1 - (1 + monthlyRate) ** -totalPayments);
 
     let balance = loanAmount;
     let cumulativeTax = 0;
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
 
     for (let i = 1; i <= totalPayments && balance > 0; i++) {
         const interest = balance * monthlyRate;
@@ -81,6 +102,10 @@ export function generateAmortizationSchedule(
         const taxReturned = yearlyTaxReturn / 12;
         cumulativeTax += taxReturned;
 
+        // Calculate LTV and PMI status
+        const ltv = calculateLTV(balance, effectiveHomeValue);
+        const pmiActive = shouldPMIBeActive(ltv);
+
         schedule.push({
             paymentNumber: i,
             paymentDate: currentDate.toISOString().split('T')[0],
@@ -94,6 +119,8 @@ export function generateAmortizationSchedule(
             year: currentDate.getFullYear(),
             taxReturned,
             cumulativeTaxReturned: cumulativeTax,
+            pmiActive,
+            ltv,
         });
 
         currentDate.setMonth(currentDate.getMonth() + 1);
